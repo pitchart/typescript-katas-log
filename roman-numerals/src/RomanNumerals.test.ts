@@ -1,32 +1,10 @@
 import { RomanNumerals } from './RomanNumerals'
 
-// The symbols “I”, “X”, “C”, and “M” can be repeated three times in succession, but no more
-// 2000 => MM
-// 3000 => MMM
-// 4 => IV
-// 9 => IX
-// 40 => XL
-// 90 => XC
-// 400 => CD
-// 900 => CM
-
-//“I” can be subtracted from “V” and “X” only
-// 99 => XCIX
-// 999 => CMXCIX
-// 49 => XLIX
-// 499 => CDXCIX
-
-// “X” can be subtracted from “L” and “C” only.
-// 490 => CDXC
-// 990 =>  CMXC
-
- 
-
 describe('Roman Numerals', () => {
 
   const romanNumerals = new RomanNumerals();
   describe('no need to be able to convert numbers larger than about 3000 and less than equal 0', () => {
-    it('Larger than 3000', () => {
+    it('Larger than 4000', () => {
       expect(romanNumerals.convert(3001)).toBe('');
     });
     it('Less than equal 0', () => {
@@ -59,23 +37,77 @@ describe('Roman Numerals', () => {
   })
 
   describe('Repetitions symbols', () => {
-    it('2 => II', () => {
-      expect(romanNumerals.convert(2)).toBe('II');
-    })
     it('3 => III', () => {
       expect(romanNumerals.convert(3)).toBe('III');
-    })
-    it('20 => XX', () => {
-      expect(romanNumerals.convert(20)).toBe('XX');
     })
     it('30 => XXX', () => {
       expect(romanNumerals.convert(30)).toBe('XXX');
     })
-    it('200 => CC', () => {
-      expect(romanNumerals.convert(200)).toBe('CC');
-    })
     it('300 => CCC', () => {
       expect(romanNumerals.convert(300)).toBe('CCC');
+    })
+    it('3000 => MMM', () => {
+      expect(romanNumerals.convert(3000)).toBe('MMM');
+    })
+    it('4 => IV', () => {
+      expect(romanNumerals.convert(4)).toBe('IV');
+    })
+    it('9 => IX', () => {
+      expect(romanNumerals.convert(9)).toBe('IX');
+    })
+    it('40 => XL', () => {
+      expect(romanNumerals.convert(40)).toBe('XL');
+    })
+    it('90 => XC', () => {
+      expect(romanNumerals.convert(90)).toBe('XC');
+    });
+    it('400 => CD', () => {
+      expect(romanNumerals.convert(400)).toBe('CD');
+    })
+    it('900 => CM', () => {
+      expect(romanNumerals.convert(900)).toBe('CM');
+    })
+  });
+
+  describe('“I” can be subtracted from “V” and “X” only', () => {
+    it('49 => XLIX', () => {
+      expect(romanNumerals.convert(49)).toBe('XLIX');
+    })
+    it('99 => XCIX', () => {
+      expect(romanNumerals.convert(99)).toBe('XCIX');
+    })
+    it('499 => CDXCIX', () => {
+      expect(romanNumerals.convert(499)).toBe('CDXCIX');
+    })
+  })
+
+  describe('“X” can be subtracted from “L” and “C” only.', () => {
+    it('490 => CDXC', () => {
+      expect(romanNumerals.convert(490)).toBe('CDXC');
+    })
+    it('990 =>  CMXC', () => {
+      expect(romanNumerals.convert(990)).toBe('CMXC');
+    })
+  })
+
+  describe('“I” can be subtracted from “V” and “X” only', () => {
+    it('49 => XLIX', () => {
+      expect(romanNumerals.convert(49)).toBe('XLIX');
+    })
+    it('99 => XCIX', () => {
+      expect(romanNumerals.convert(99)).toBe('XCIX');
+    })
+    it('499 => CDXCIX', () => {
+      expect(romanNumerals.convert(499)).toBe('CDXCIX');
+    })
+  })
+
+  describe('test au pif', () => {
+    it('1983 => MCMLXXXIII', () => {
+      expect(romanNumerals.convert(1983)).toBe('MCMLXXXIII');
+    })
+    it('3999 => MMMCMXCIX', () => {
+      expect(romanNumerals.convert(3999)).toBe('MMMCMXCIX');
     })
   });
 })
