@@ -1,4 +1,4 @@
-export class RomanNumerals {
+export class NumeralsToRoman {
     private arabicToRoman = new Map<number, string>([
       [1, 'I'],
       [4, 'IV'],
@@ -16,7 +16,7 @@ export class RomanNumerals {
     ]);
 
     convert(arabicNumber: number) {
-      if (arabicNumber > 4000) return '';
+      if (arabicNumber > 3000) return '';
 
       let acc = '';
       for (let key of Array.from(this.arabicToRoman.keys()).reverse()) {
