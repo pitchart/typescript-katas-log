@@ -1,19 +1,25 @@
 class RomanToNumerals {
     private romanToNumerals: Map<string, number> = new Map<string, number>([
         ["I", 1],
+        ['IV', 4],
         ["V", 5],
+        ['IX', 9],
         ["X", 10],
+        ["XL", 40],
         ["L", 50],
+        ["XC", 90],
         ["C", 100],
+        ["CD", 400],
         ["D", 500],
+        ["CM", 900],
         ["M", 1000],
     ]);
 
     convert(romanNumber: string): number {
-        const fistLetter = romanNumber.charAt(0);
-
-        return this.romanToNumerals.get(fistLetter) *  romanNumber.split('').length;
-
+        for (let key of Array.from(this.romanToNumerals.keys()).reverse()) {
+            if (romanNumber.startsWith(key))
+            return this.romanToNumerals.get(key) *  (romanNumber.match(new RegExp(key, "g")) || []).length;
+        }
     }
 }
 
@@ -70,22 +76,40 @@ describe("RomanToNumerals", () => {
         });
 
     });
+    describe("“I” can be subtracted from “V” and “X” only", () => {
+        test("IV => 4", () => {
+            expect(romanToNumerals.convert("IV")).toBe(4);
+        });
+        test("IX => 9", () => {
+            expect(romanToNumerals.convert("IX")).toBe(9);
+        });
+    });
 
+    describe("“X” can be subtracted from “L” and “C” only", () => {
+        test("XL => 40", () => {
+            expect(romanToNumerals.convert("XL")).toBe(40);
+        });
+        test("XC => 90", () => {
+            expect(romanToNumerals.convert("XC")).toBe(90);
+        });
+    });
+
+    describe("“C” can be subtracted from “D” and “M” only", () => {
+        test("CD => 400", () => {
+            expect(romanToNumerals.convert("CD")).toBe(400);
+        });
+        test("CM => 900", () => {
+            expect(romanToNumerals.convert("CM")).toBe(900);
+        });
+    });
+
+    describe("Final tests en vrac", () => {
+        test("XI => 11", () => {
+            expect(romanToNumerals.convert("XI")).toBe(11);
+        });
+    });
 
 });
-
-
-// “I” can be subtracted from “V” and “X” only
-// IV => 4
-// IX => 9
-
-// “X” can be subtracted from “L” and “C” only
-// XL => 40
-// XC => 90
-
-// “C” can be subtracted from “D” and “M” only
-// CD => 400
-// CM => 900
 
 // A number written in Arabic numerals can be broken into digits. For example, 1903 is composed of 1 (one thousand), 9 (nine hundreds), 0 (zero tens), and 3 (three units). To write the Roman numeral, each of the nonzero digits should be treated separately. In the above example, 1,000 = M, 900 = CM, and 3 = III. Therefore, 1903 = MCMIII
 // XI => 11
