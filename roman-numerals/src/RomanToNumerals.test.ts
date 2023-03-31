@@ -1,56 +1,79 @@
 class RomanToNumerals {
-  private romanToNumerals: Map<string, number> = new Map<string, number>([
-    ["I", 1],
-    ["V", 5],
-    ["X", 10],
-    ["L", 50],
-    ["C", 100],
-    ["D", 500],
-    ["M", 1000],
-  ]);
-  convert(romanNumber: string): number {
-    return this.romanToNumerals.get(romanNumber);
-  }
+    private romanToNumerals: Map<string, number> = new Map<string, number>([
+        ["I", 1],
+        ["V", 5],
+        ["X", 10],
+        ["L", 50],
+        ["C", 100],
+        ["D", 500],
+        ["M", 1000],
+    ]);
+
+    convert(romanNumber: string): number {
+        const fistLetter = romanNumber.charAt(0);
+
+        return this.romanToNumerals.get(fistLetter) *  romanNumber.split('').length;
+
+    }
 }
 
 const romanToNumerals = new RomanToNumerals();
 
 describe("RomanToNumerals", () => {
-  test("I => 1", () => {
-    expect(romanToNumerals.convert("I")).toBe(1);
-  });
-  test("V => 5", () => {
-    expect(romanToNumerals.convert("V")).toBe(5);
-  });
-  test("X => 10", () => {
-    expect(romanToNumerals.convert("X")).toBe(10);
-  });
-  test("L => 50", () => {
-    expect(romanToNumerals.convert("L")).toBe(50);
-  });
-  test('C => 100', () => {
-    expect(romanToNumerals.convert("C")).toBe(100);
-  });
-  test('D => 500', () => {
-    expect(romanToNumerals.convert("D")).toBe(500);
-  });
-  test('M => 1000', () => {
-    expect(romanToNumerals.convert("M")).toBe(1000);
-  });
+    describe("Symbols", () => {
+
+        test("I => 1", () => {
+            expect(romanToNumerals.convert("I")).toBe(1);
+        });
+        test("V => 5", () => {
+            expect(romanToNumerals.convert("V")).toBe(5);
+        });
+        test("X => 10", () => {
+            expect(romanToNumerals.convert("X")).toBe(10);
+        });
+        test("L => 50", () => {
+            expect(romanToNumerals.convert("L")).toBe(50);
+        });
+        test('C => 100', () => {
+            expect(romanToNumerals.convert("C")).toBe(100);
+        });
+        test('D => 500', () => {
+            expect(romanToNumerals.convert("D")).toBe(500);
+        });
+        test('M => 1000', () => {
+            expect(romanToNumerals.convert("M")).toBe(1000);
+        });
+    });
+    describe("Repeated symbols", () => {
+
+        test("II => 2", () => {
+            expect(romanToNumerals.convert("II")).toBe(2);
+        });
+
+        test("III => 3", () => {
+            expect(romanToNumerals.convert("III")).toBe(3);
+        });
+
+        test("XX => 20", () => {
+            expect(romanToNumerals.convert("XX")).toBe(20);
+        });
+        test("XXX => 30", () => {
+            expect(romanToNumerals.convert("XXX")).toBe(30);
+        });
+
+        test("CC => 200", () => {
+            expect(romanToNumerals.convert("CC")).toBe(200);
+        });
+
+        test("MM => 2000", () => {
+            expect(romanToNumerals.convert("MM")).toBe(2000);
+        });
+
+    });
+
+
 });
 
-// The symbols “I”, “X”, “C”, and “M” can be repeated three times in succession, but no more.
-// II => 2
-// III => 3
-// IV => 4
-// XX => 20
-// XXX => 30
-// XL => 40
-// CC => 200
-// CCC => 300
-// CD => 400
-// MM => 2000
-// MMM => 3000
 
 // “I” can be subtracted from “V” and “X” only
 // IV => 4
