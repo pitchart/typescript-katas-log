@@ -9,12 +9,12 @@ describe("Account", () => {
     test("register Bud Spencer should provide a new tweet url", () => {
         const tweetUrl = accountService.register("1")
 
-        expect(tweetUrl).toBe("TweetUrl")
+        expect(tweetUrl.get()).toBe("TweetUrl")
     })
 
     test("register an unknown user should provide nothing", () => {
         const tweetUrl = accountService.register("unknown")
 
-        expect(tweetUrl).toBeNull()
+        expect(tweetUrl.getOrElse(null)).toBeNull()
     })
 })

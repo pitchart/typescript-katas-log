@@ -1,6 +1,19 @@
 import {UserService} from "./user.service";
 import {TwitterService} from "./twitter.service";
 import {BusinessLogger} from "./business.logger";
+import {None, Option, Some} from "funfix-core";
+import {User} from "./user";
+
+class RegistrationContext {
+    accountId: string;
+    twitterToken: string;
+    tweetUrl: string;
+
+    constructor(public readonly user: User) {
+
+    }
+
+}
 
 export class AccountService {
     private _userService: UserService;
@@ -13,31 +26,43 @@ export class AccountService {
         this._businessLogger = businessLogger;
     }
 
-    register = (id: string): string | null => {
+    register = (id: string): Option<string> => {
         try {
-            const user = this._userService.findById(id);
 
-            if (user == null) return null;
-
-            const accountId = this._twitterService.register(user.email, user.name);
-
-            if (accountId == null) return null;
-
-            const twitterToken = this._twitterService.authenticate(user.email, user.password);
-
-            if (twitterToken == null) return null;
-
-            const tweetUrl = this._twitterService.tweet(twitterToken, "Hello I am " + user.name);
-
-            if (tweetUrl == null) return null;
-
-            this._userService.updateTwitterAccountId(id, accountId);
-            this._businessLogger.logRegisterSuccess(id);
-
-            return tweetUrl;
+            const process = Option.of(this._userService.findById(id))
+                .chain((user) => {
+                        const ctx = new RegistrationContext(user);
+                        ctx.accountId = this._twitterService.register(user.email, user.name);
+                        if (ctx.accountId == null) {
+                            return None;
+                        } else {
+                            return Some(ctx);
+                        }
+                    }
+                ).chain((ctx) => {
+                    ctx.twitterToken = this._twitterService.authenticate(ctx.user.email, ctx.user.password);
+                    if (ctx.twitterToken == null) {
+                        return None;
+                    } else {
+                        return Some(ctx);
+                    }
+                })
+                .chain((ctx) => {
+                    ctx.tweetUrl = this._twitterService.tweet(ctx.twitterToken, "Hello I am " + ctx.user.name);
+                    if (ctx.tweetUrl == null) {
+                        return None;
+                    } else {
+                        return Some(ctx);
+                    }
+                }).map((ctx) => {
+                    this._userService.updateTwitterAccountId(ctx.user.id, ctx.accountId);
+                    this._businessLogger.logRegisterSuccess(ctx.user.id);
+                    return ctx.tweetUrl;
+                });
+            return process;
         } catch (ex) {
             this._businessLogger.logRegisterFailure(id, ex);
-            return null;
+            return None;
         }
     }
 
