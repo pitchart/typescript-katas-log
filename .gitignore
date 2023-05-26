@@ -7,7 +7,7 @@
 .idea_modules/
 *.iml
 target/
-/js/**/node_modules
+node_modules/
 csharp/dotnet/Kata/.vs
 csharp/dotnet/Kata/packages
 csharp/dotnet/Kata/**/bin
@@ -38,3 +38,4 @@ clojure/**/.lein-failures
 clojure/**/.nrepl-port
 python/pytest/.pytest_cache
 python/pytest/__pycache__
+package-lock.json
