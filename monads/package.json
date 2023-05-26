@@ -4,7 +4,7 @@
   "description": "Hands on session to learn monads in typescript using typescript functional extensions",
   "main": " ",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "Julien VITTE",
   "license": "ISC",
