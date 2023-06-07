@@ -1,7 +1,7 @@
 import { UserService } from './user.service'
 import { TwitterService } from './twitter.service'
 import { BusinessLogger } from './business.logger'
-import { None, Option } from 'funfix-core'
+import { None, Option, Try } from 'funfix-core'
 import { User } from './user'
 
 class RegistrationContext {
@@ -26,16 +26,18 @@ export class AccountService {
   }
 
   register = (id: string): Option<string> => {
-    try {
-      return Option.of(this._userService.findById(id))
-        .chain((user) => this.registerAccount(user))
-        .chain((ctx) => this.authenticateUser(ctx))
-        .chain((ctx) => this.tweetAsUser(ctx))
-        .map((ctx) => this.updateTwitterAccountIdAndLogRegisterSuccess(ctx))
-    } catch (ex) {
-      this._businessLogger.logRegisterFailure(id, ex)
+    return Try.of(() => this.process(id)).fold((ex) => {
+      this._businessLogger.logRegisterFailure(id, ex as Error)
       return None
-    }
+    }, id => id)
+  }
+
+  private process (id: string): Option<string> {
+    return Option.of(this._userService.findById(id))
+      .chain((user) => this.registerAccount(user))
+      .chain((ctx) => this.authenticateUser(ctx))
+      .chain((ctx) => this.tweetAsUser(ctx))
+      .map((ctx) => this.updateTwitterAccountIdAndLogRegisterSuccess(ctx))
   }
 
   private updateTwitterAccountIdAndLogRegisterSuccess (ctx: RegistrationContext): string {
