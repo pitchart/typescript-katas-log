@@ -6,6 +6,18 @@ import { User } from './user'
 
 class RegisterContext {
   accountId: string
+  twitterToken: string
+  tweetUrl: string
+
+  withTweetUrl (tweetUrl: string): RegisterContext {
+    this.tweetUrl = tweetUrl
+    return this
+  }
+
+  withTwitterToken (twitterToken: string): RegisterContext {
+    this.twitterToken = twitterToken
+    return this
+  }
 
   withAcountId (accountId: string): RegisterContext {
     this.accountId = accountId
@@ -34,37 +46,32 @@ export class AccountService {
 
   register = (id: string): string | null => {
     try {
-      const user = Option.of(this._userService.findById(id))
+      return Option.of(this._userService.findById(id))
         .map(user => new RegisterContext(user))
+        .flatMap(this.registerOnTwitter)
+        .flatMap(this.authenticateOnTwitter)
+        .flatMap(this.tweet)
+        .map(context => {
+          this._userService.updateTwitterAccountId(id, context.accountId)
+          this._businessLogger.logRegisterSuccess(id)
 
-      const accountId = user.flatMap(context => {
-        return Option.of(this._twitterService.register(context.user.email, context.user.name))
-          .map(accountId => context.withAcountId(accountId))
-      })
-
-      if (accountId.isEmpty()) return null
-
-      const twitterToken = this._twitterService.authenticate(
-        user.get().email,
-        user.get().password
-      )
-
-      if (twitterToken == null) return null
-
-      const tweetUrl = this._twitterService.tweet(
-        twitterToken,
-        'Hello I am ' + user.get().name
-      )
-
-      if (tweetUrl == null) return null
-
-      this._userService.updateTwitterAccountId(id, accountId.get())
-      this._businessLogger.logRegisterSuccess(id)
-
-      return tweetUrl
+          return context.tweetUrl
+        }).getOrElse(null)
     } catch (ex) {
       this._businessLogger.logRegisterFailure(id, ex)
       return null
     }
   }
+
+  private readonly tweet = (context: RegisterContext): Option<RegisterContext> =>
+    Option.of(this._twitterService.tweet(context.twitterToken, 'Hello I am ' + context.user.name))
+      .map(tweetUrl => context.withTweetUrl(tweetUrl))
+
+  private readonly authenticateOnTwitter = (context: RegisterContext): Option<RegisterContext> =>
+    Option.of(this._twitterService.authenticate(context.user.email, context.user.password))
+      .map(twitterToken => context.withTwitterToken(twitterToken))
+
+  private readonly registerOnTwitter = (context: RegisterContext): Option<RegisterContext> =>
+    Option.of(this._twitterService.register(context.user.email, context.user.name))
+      .map(accountId => context.withAcountId(accountId))
 }
